@@ -57,6 +57,7 @@ class TabBarController: UITabBarController {
                                    y: view.bounds.height - tabBar.bounds.height - subMenuViewHeight,
                                    width: view.bounds.width - view.layoutMargins.left * 2, height: subMenuViewHeight)
         subMenuView.setup()
+        subMenuView.delegate = self
         view.addSubview(subMenuView)
         
         // add plus btn
@@ -101,5 +102,20 @@ extension TabBarController: PlusBtnViewDelgate {
                 }
             })
         }
+    }
+}
+
+extension TabBarController: SubMenuViewDelegate {
+    
+    func subMenuViewDidSelectItem(idx: Int) {
+        
+        let alert = UIAlertController(title: "submenu", message: "clicked: \(idx)", preferredStyle: .alert)
+        
+        let actionOK = UIAlertAction(title: "OK", style: .default, handler: { action in
+            self.plusBtnView.switchBtn(toState: false)
+        })
+        alert.addAction(actionOK)
+        
+        self.present(alert, animated: true, completion: nil)
     }
 }

@@ -9,6 +9,10 @@
 import Foundation
 import UIKit
 
+protocol SubMenuViewDelegate {
+    func subMenuViewDidSelectItem(idx: Int)
+}
+
 class SubMenuView: UIView {
     
     let itemsCnt = 3
@@ -16,6 +20,8 @@ class SubMenuView: UIView {
     
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var csCollectionViewWidth: NSLayoutConstraint!
+    
+    var delegate: SubMenuViewDelegate?
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -61,5 +67,8 @@ extension SubMenuView: UICollectionViewDataSource {
 
 extension SubMenuView: UICollectionViewDelegate {
     
-    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        delegate?.subMenuViewDidSelectItem(idx: indexPath.item)
+    }
 }
