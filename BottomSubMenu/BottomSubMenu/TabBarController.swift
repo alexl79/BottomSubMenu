@@ -35,9 +35,10 @@ class TabBarController: UITabBarController {
     func prepareTabBar() {
         
         let bgColor = UIColor(red: 250.0/255.0, green: 250.0/255.0, blue: 250.0/255.0, alpha: 1.0)
-        view.backgroundColor = bgColor
+        
         tabBar.backgroundColor = bgColor
         tabBar.backgroundImage = UIImage()
+        
         UITabBar.appearance().shadowImage = UIImage()
         
         for item in tabBar.items! {
@@ -51,6 +52,15 @@ class TabBarController: UITabBarController {
     
     func prepareSubMenu() {
         
+        // add plus btn
+        
+        let plusBtnColor = UIColor(red: 170.0/255.0, green: 177.0/255.0, blue: 190.0/255.0, alpha: 1.0)
+        plusBtnView = PlusBtnView(side: tabBar.frame.height, alignWithView: tabBar, color: plusBtnColor)
+        plusBtnView.delegate = self
+        view.addSubview(plusBtnView)
+        
+        // add sub menu
+        
         subMenuView = Bundle.main.loadNibNamed(String(describing: SubMenuView.self), owner: self, options: nil)!.first as! SubMenuView!
         subMenuView.isHidden = true
         subMenuView.frame = CGRect(x: view.layoutMargins.left,
@@ -59,13 +69,10 @@ class TabBarController: UITabBarController {
         subMenuView.setup()
         subMenuView.delegate = self
         view.addSubview(subMenuView)
+
+        // link with plus button
         
-        // add plus btn
-        
-        let plusBtnColor = UIColor(red: 170.0/255.0, green: 177.0/255.0, blue: 190.0/255.0, alpha: 1.0)
-        plusBtnView = PlusBtnView(side: tabBar.frame.height, alignWithView: tabBar, menuView: subMenuView, color: plusBtnColor)
-        plusBtnView.delegate = self
-        view.addSubview(plusBtnView)
+        plusBtnView.subMenuView = subMenuView
     }
         
 }
@@ -100,6 +107,10 @@ extension TabBarController: PlusBtnViewDelgate {
                     let offset = vc.scrollView?.contentOffset
                     vc.scrollView?.contentOffset = CGPoint(x: offset!.x, y: offset!.y + (to ? shift : 0.0))
                 }
+            })
+        } else {
+            UIView.animate(withDuration: 0.3, animations: {
+                self.tabBar.alpha = (to ? 0.0 : 1.0)
             })
         }
     }

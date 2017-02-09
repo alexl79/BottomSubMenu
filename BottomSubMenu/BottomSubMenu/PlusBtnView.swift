@@ -23,7 +23,20 @@ class PlusBtnView: UIView {
     var plusBtnViewH: UIView!
     var plusBtnViewV: UIView!
     
-    weak var subMenuView: UIView!
+    weak var subMenuView: UIView? {
+        didSet {
+            guard let _ = subMenuView else { return }
+            
+            subMenuView!.isHidden = true
+            for view in self.subMenuView!.subviews { view.alpha = 0 }
+            
+            subMenuViewInitFrame = subMenuView!.frame
+            
+            subMenuView!.frame = CGRect(x: subMenuViewInitFrame.origin.x + subMenuViewInitFrame.width / 2.0,
+                                       y: subMenuViewInitFrame.origin.y,
+                                       width: plusBtnLineWidth, height: subMenuViewInitFrame.height)
+        }
+    }
     
     var plusBtnViewVInitFrame: CGRect!
     var subMenuViewInitFrame: CGRect!
@@ -33,20 +46,10 @@ class PlusBtnView: UIView {
     
     // MARK: - Life Cycle
     
-    init(side: CGFloat, alignWithView: UIView, menuView: UIView, color: UIColor) {
+    init(side: CGFloat, alignWithView: UIView, color: UIColor) {
         super.init(frame: CGRect(x: (alignWithView.frame.width - side) / 2.0,
                                  y: alignWithView.frame.origin.y,
                                  width: side, height: side))
-        
-        subMenuView = menuView
-        subMenuView.isHidden = true
-        for view in self.subMenuView.subviews { view.alpha = 0 }
-        
-        subMenuViewInitFrame = subMenuView.frame
-        
-        subMenuView.frame = CGRect(x: subMenuViewInitFrame.origin.x + subMenuViewInitFrame.width / 2.0,
-                                   y: subMenuViewInitFrame.origin.y,
-                                   width: plusBtnLineWidth, height: subMenuViewInitFrame.height)
         
         plusBtnColor = color
     }
@@ -144,18 +147,19 @@ class PlusBtnView: UIView {
     
     func animateForwardStep1() {
         
+        guard let _ = subMenuView else { return }
         delegate?.plusBtnViewWillChangeState(to: true, step: 1)
         
         UIView.animate(withDuration: 0.3, animations: {
             
             self.plusBtnViewV.frame = CGRect(x: self.plusBtnViewV.frame.origin.x,
-                                             y: self.subMenuView.frame.origin.y,
-                                             width: self.plusBtnLineWidth, height: self.subMenuView.frame.height)
-            self.plusBtnViewV.backgroundColor = self.subMenuView.backgroundColor
+                                             y: self.subMenuView!.frame.origin.y,
+                                             width: self.plusBtnLineWidth, height: self.subMenuView!.frame.height)
+            self.plusBtnViewV.backgroundColor = self.subMenuView!.backgroundColor
             
         }, completion: { status in
             
-            self.subMenuView.isHidden = false
+            self.subMenuView!.isHidden = false
             self.plusBtnViewV.isHidden = true
             
             self.animateForwardStep2()
@@ -164,35 +168,37 @@ class PlusBtnView: UIView {
     
     func animateForwardStep2() {
         
+        guard let _ = subMenuView else { return }
         delegate?.plusBtnViewWillChangeState(to: true, step: 2)
         
         UIView.animate(withDuration: 0.3, animations: {
             
-            self.subMenuView.frame = self.subMenuViewInitFrame
-            for view in self.subMenuView.subviews { view.alpha = 1.0 }
+            self.subMenuView!.frame = self.subMenuViewInitFrame
+            for view in self.subMenuView!.subviews { view.alpha = 1.0 }
             
-            self.subMenuView.layoutIfNeeded()
+            self.subMenuView!.layoutIfNeeded()
             
         }, completion: nil)
     }
     
     func animateBackwardStep1() {
         
+        guard let _ = subMenuView else { return }
         delegate?.plusBtnViewWillChangeState(to: false, step: 1)
         
         UIView.animate(withDuration: 0.3, animations: {
             
-            self.subMenuView.frame = CGRect(x: self.subMenuViewInitFrame.origin.x + self.subMenuViewInitFrame.width / 2.0,
+            self.subMenuView!.frame = CGRect(x: self.subMenuViewInitFrame.origin.x + self.subMenuViewInitFrame.width / 2.0,
                                             y: self.subMenuViewInitFrame.origin.y,
                                             width: self.plusBtnLineWidth, height: self.subMenuViewInitFrame.height)
-            for view in self.subMenuView.subviews { view.alpha = 0.0 }
+            for view in self.subMenuView!.subviews { view.alpha = 0.0 }
             
-            self.subMenuView.layoutIfNeeded()
+            self.subMenuView!.layoutIfNeeded()
             
         }, completion: { status in
             
             self.plusBtnViewV.isHidden = false
-            self.subMenuView.isHidden = true
+            self.subMenuView!.isHidden = true
             
             self.animateBackwardStep2()
         })
@@ -200,6 +206,7 @@ class PlusBtnView: UIView {
     
     func animateBackwardStep2() {
         
+        guard let _ = subMenuView else { return }
         delegate?.plusBtnViewWillChangeState(to: false, step: 2)
         
         UIView.animate(withDuration: 0.3, animations: {
